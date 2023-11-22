@@ -1,0 +1,122 @@
+How To Create a Self-Signed SSL Certificate for Apache in Ubuntu 18.04
+
+Step 1 — Creating the SSL Certificate
+
+You can create a self-signed key and certificate pair with a single OpenSSL command:
+
+        "sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt"
+
+openssl: This is the basic command line tool for creating and managing OpenSSL certificates, keys, and other files.
+req: This subcommand specifies to use X.509 certificate signing request (CSR) management. The “X.509” is a public key infrastructure standard that SSL and TLS adhere to for its key and certificate management. To create a new X.509 cert, use this subcommand.
+-x509: This further modifies the previous subcommand by telling the utility to make a self-signed certificate instead of generating a certificate signing request, as would normally happen.
+-nodes: This tells OpenSSL to skip the option to secure the certificate with a passphrase. Apache needs to be able to read the file, without user intervention, when the server starts up. A passphrase would prevent this from happening because users would have to enter it after every restart.
+-days 365: This option sets the length of time that the certificate will be considered valid. In this case, it’s set for one year.
+-newkey rsa:2048: This specifies that you want to generate a new certificate and a new key at the same time. The key required to sign the certificate was not created in a previous step, so it needs to be created along with the certificate. The rsa:2048 portion tells it to make an RSA key that is 2048 bits long.
+-keyout: This line tells OpenSSL where to place the generated private key file that’s being created.
+-out: This tells OpenSSL where to place the certificate that’s being created.        
+
+Step 2 — Configuring Apache to Use SSL
+
+        "sudo nano /etc/apache2/sites-available/default-ssl.conf"
+
+now change in the file and we will see the data like this 
+
+  
+<IfModule mod_ssl.c>
+        <VirtualHost _default_:443>
+                ServerAdmin your_email@example.com
+                ServerName server_domain_or_IP
+
+                DocumentRoot /var/www/html
+
+                ErrorLog ${APACHE_LOG_DIR}/error.log
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+                SSLEngine on
+
+                SSLCertificateFile      /etc/ssl/certs/<your.crt>
+                SSLCertificateKeyFile /etc/ssl/private/<your.key>
+
+                <FilesMatch "\.(cgi|shtml|phtml|php)$">
+                                SSLOptions +StdEnvVars
+                </FilesMatch>
+                <Directory /usr/lib/cgi-bin>
+                                SSLOptions +StdEnvVars
+                </Directory>
+
+        </VirtualHost>
+</IfModule>
+
+
+Step 3 — Adjusting the Firewall
+if you have the ufw firewall enabled, as recommended by the prerequisite guides, you might need to adjust the settings to allow for SSL traffic. Luckily, Apache registers a few profiles with ufw upon installation.
+
+View the list of available profiles by running the following:
+
+sudo ufw app list
+
+The output should be as follows:
+
+Output
+Available applications:
+  Apache
+  Apache Full
+  Apache Secure
+  OpenSSH
+
+You can review the current setting by checking the status:
+
+sudo ufw status
+If you allowed only regular HTTP traffic earlier, your output results will be like the following:
+
+Output
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere
+Apache                     ALLOW       Anywhere
+OpenSSH (v6)               ALLOW       Anywhere (v6)
+Apache (v6)                ALLOW       Anywhere (v6)
+To allow additional HTTPS traffic, you can allow the “Apache Full” profile and then delete the redundant “Apache” profile allowance:
+
+sudo ufw allow 'Apache Full'
+sudo ufw delete allow 'Apache'
+Confirm the changes by checking the status:
+
+sudo ufw status
+Output
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere
+Apache Full                ALLOW       Anywhere
+OpenSSH (v6)               ALLOW       Anywhere (v6)
+Apache Full (v6)           ALLOW       Anywhere (v6)
+You’ve now successfully allowed Apache traffic to your firewall.
+
+
+Step 4 — Enabling the Changes in Apache
+
+Now that you’ve made changes and adjusted your firewall, you can enable the SSL and headers modules in Apache, enable your SSL-ready Virtual Host, and restart Apache.
+
+Enable mod_ssl, the Apache SSL module, and mod_headers, which is needed by some of the settings in the SSL snippet, with the a2enmod command:
+
+sudo a2enmod ssl
+sudo a2enmod headers
+
+Next, enable your SSL Virtual Host with the a2ensite command:
+
+sudo a2ensite default-ssl
+
+If your output has Syntax OK in it, your configuration file has no syntax errors. You can now safely restart Apache to implement your changes:
+
+sudo systemctl restart apache2
+
+Step 5 — Testing Encryption
+
+https://server_domain_or_IP
+
+
+
