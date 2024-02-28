@@ -1,0 +1,31 @@
+create new conf file your sub domain 
+
+sudo cp 000-default.conf <your file name> 
+
+put the data in the file 
+
+
+```
+<VirtualHost *:80>
+    ServerAdmin webmaster@example.com
+    ServerName your-domain.com
+    DocumentRoot /var/www/html/your-domain
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    <Directory /var/www/html/your-domain>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+enable this file by this command 
+
+a2ensite <file name>
+
+and disable your default file
+
+a2dissite 000-default-conf 
