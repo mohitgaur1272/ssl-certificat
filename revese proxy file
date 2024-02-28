@@ -1,0 +1,35 @@
+if you want to access your container with your DNS name so create configratution file in this folder 
+     cd /etc/apache2/site-available/
+     sudo vim dell.conf 
+
+
+<VirtualHost *:80>
+    ServerName dell.scriptlelo.com   # replace your domain name or you want to add subdomain so change this line
+
+    ProxyPass / http://3.111.10.181:8888/ # replace your instance ip and  replace your conatiner port
+    ProxyPassReverse / http://3.111.10.181:8888/ # # replace your instance ip and  replace your conatiner port
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+RewriteEngine on
+RewriteCond %{SERVER_NAME} =dell.scriptlelo.com
+RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+
+
+after this disable the default file by this command 
+     a2dissite 000-default.conf
+
+
+then create link in site-enabled folder by this command 
+
+     a2ensite dell.conf 
+
+
+now enable the proxy module 
+     sudo a2enmod proxy
+     sudo a2enmod proxy_http
+
+
+and restart apache server 
+     sudo systemctl restart apache2
