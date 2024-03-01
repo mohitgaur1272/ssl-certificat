@@ -37,5 +37,10 @@ sudo certbot renew --dry-run
 
 if you want to create ssl automatically 
 ```
-sudo /usr/sbin/certbot-auto certonly --standalone --rsa-key-size 2048 --keep-until-expiring
+sudo /usr/sbin/certbot-auto certonly --standalone   --rsa-key-size 2048 --keep-until-expiring
 ```
+
+```
+sudo certbot --apache --agree-tos --preferred-challenges http -d domain-name.com
+```
+both command are in use 
