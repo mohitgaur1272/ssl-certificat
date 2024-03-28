@@ -5,7 +5,7 @@ sudo cp 000-default.conf <your file name>
 put the data in the file 
 
 
-```
+###########################################################################################
 <VirtualHost *:80>
     ServerAdmin webmaster@example.com
     ServerName your-domain.com
@@ -20,7 +20,7 @@ put the data in the file
         Require all granted
     </Directory>
 </VirtualHost>
-```
+###########################################################################################
 
 enable this file by this command 
 
