@@ -34,6 +34,14 @@ The Certbot packages on your system come with a cron job or systemd timer that w
 ```
 sudo certbot renew --dry-run
 ```
+## if you want to configure cronjob and you want to create ssl automatically 
+```
+sudo certbot --apache --non-interactive --agree-tos -m example@gmail.com --domains example.com 
+```
+### replace with your email address and replace with your domain name if your want toi add multipal domain so use this command 
+```
+sudo certbot --apache --non-interactive --agree-tos -m example@gmail.com --domains example.com,example1.com,example2.com,example3.com,example4.com
+```
 
 if you want to create ssl automatically 
 ```
