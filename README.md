@@ -40,7 +40,11 @@ sudo certbot --apache --non-interactive --agree-tos -m example@gmail.com --domai
 ```
 ### replace with your email address and replace with your domain name if your want toi add multipal domain so use this command 
 ```
-sudo certbot --apache --non-interactive --agree-tos -m example@gmail.com --domains example.com,example1.com,example2.com,example3.com,example4.com
+sudo certbot --apache --non-interactive --agree-tos --expand -m example@gmail.com --domains example.com,example1.com,example2.com,example3.com,example4.com
+```
+### for example
+```
+sudo certbot --apache --non-interactive --agree-tos --expand -m developer.w3itexperts@gmail.com --domains pixoz.wprdx.com,pendown.wprdx.com
 ```
 
 if you want to create ssl automatically 
